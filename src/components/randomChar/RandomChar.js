@@ -9,10 +9,6 @@ import mjolnir from '../../resources/img/mjolnir.png';
 
 
 class RandomChar extends Component {
-    constructor(props) {
-        super(props);
-        this.updateChar();
-    }
 
     // записываем в стэйт объект с необх. парам персонажа. null потому что изначально мы не храним данные ни одного из первсонажей
     // синтаксис стэйта без this и конструктора, потому что исп-ем возможности полей класса
@@ -25,10 +21,20 @@ class RandomChar extends Component {
     // получаем сюда экземпляр класса MarvelService со всеми методами и св-вами прописанныами в MarvelService.js
     marvelService = new MarvelService();
 
+    componentDidMount() {
+        this.updateChar();
+    }
+
     onCharLoaded = (char) => {
         this.setState({
             char, 
             loading: false
+        })
+    }
+
+    onCharLoading = () => {
+        this.setState({
+            loading: true
         })
     }
 
@@ -42,6 +48,7 @@ class RandomChar extends Component {
     //  ф-ция для обновления карточки случайного персонажа
     updateChar = () => {
         const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000);  // рандомно выбираем id персонажа из диапазона
+        this.onCharLoading();
         this.marvelService
             .getCharacter(id)  //  по определенному id находим нужного персонажа
             .then(this.onCharLoaded)  // обрабатывая промис получаем чистый объект с данными с сайта марвел
@@ -70,7 +77,9 @@ class RandomChar extends Component {
                     <p className="randomchar__title">
                         Or choose another one
                     </p>
-                    <button className="button button__main">
+                    <button 
+                        className="button button__main"
+                        onClick={this.updateChar}>
                         <div className="inner">try it</div>
                     </button>
                     <img src={mjolnir} alt="mjolnir" className="randomchar__decoration"/>
@@ -91,9 +100,15 @@ const View = ({char}) => {
     } else if (!description) {
         altDescription = 'There is no description for this character...'
     }
+
+    let contain;
+    if (thumbnail.search(/not/)+1) {
+        contain = {objectFit: 'contain'};
+    }
+
     return (
         <div className="randomchar__block">
-            <img src={thumbnail} alt="Random character" className="randomchar__img"/>
+            <img src={thumbnail} alt="Random character" className="randomchar__img" style={contain}/>
             <div className="randomchar__info">
                 <p className="randomchar__name">{name}</p>
                 <p className="randomchar__descr">{altDescription}</p>

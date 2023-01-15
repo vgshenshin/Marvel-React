@@ -34,6 +34,7 @@ class MarvelService {
     //  метод для отсеивания ненужных св-в в приходящем от сервера объекте c данными об одном персонаже
     _transformCharacter = (char) =>{
         return {
+            id: char.id,
             name: char.name,
             description: char.description,
             thumbnail: char.thumbnail.path + '.' + char.thumbnail.extension,

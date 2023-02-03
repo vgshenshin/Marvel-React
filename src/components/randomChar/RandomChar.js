@@ -31,7 +31,7 @@ class RandomChar extends Component {
             loading: false
         })
     }
-
+    //  метод для вкл спиннера загрузки при смене персонажа по клику на Try It
     onCharLoading = () => {
         this.setState({
             loading: true
@@ -48,7 +48,7 @@ class RandomChar extends Component {
     //  ф-ция для обновления карточки случайного персонажа
     updateChar = () => {
         const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000);  // рандомно выбираем id персонажа из диапазона
-        this.onCharLoading();
+        this.onCharLoading();  // когда запускается обновл персонажа, перед запросом на сервер вкл спиннер загрузки
         this.marvelService
             .getCharacter(id)  //  по определенному id находим нужного персонажа
             .then(this.onCharLoaded)  // обрабатывая промис получаем чистый объект с данными с сайта марвел

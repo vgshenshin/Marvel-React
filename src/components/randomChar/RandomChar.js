@@ -54,7 +54,6 @@ class RandomChar extends Component {
             .then(this.onCharLoaded)  // обрабатывая промис получаем чистый объект с данными с сайта марвел
             //  записываем в стэйт данный объект отсеянный от ненужных св-в с помощью метода _transformCharacter внутри метода getCharacter
             .catch(this.onError);
-            
     }
 
 

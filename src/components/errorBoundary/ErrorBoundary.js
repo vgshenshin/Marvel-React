@@ -16,7 +16,7 @@ class ErrorBoundary extends Component {
 
     // то же что и componentDidCatch(), но он только обновляет стэйт
     // По факту это как setState, только этот работает с ошибкой
-    // static getDerivedStateFromEror(error) {
+    // static getDerivedStateFromError(error) {
     //     return {error: true}
     // }
 

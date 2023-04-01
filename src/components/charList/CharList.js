@@ -60,11 +60,23 @@ class CharList extends Component {
 			loading: false
 		})
 	}
+	// исп-е рефов для назначения красного фокуса на карточку
+	charsRefs = [];
+
+	setRefs = ref => {
+		this.charsRefs.push(ref);
+	}
+
+	focusCard = id => {
+		this.charsRefs.forEach(el => el.classList.remove('char__item_selected'));
+		this.charsRefs[id].classList.add('char__item_selected');
+		this.charsRefs[id].focus();
+	}
 
 	// Этот метод создан для оптимизации, 
 	// чтобы не помещать такую конструкцию в метод render
 	renderItems(arr) {
-		const items =  arr.map((item) => {
+		const items =  arr.map((item, i) => {
 			let imgStyle = {'objectFit' : 'cover'};
 			if (item.thumbnail.search(/not/)+1) {
 				imgStyle = {'objectFit' : 'unset'};
@@ -72,9 +84,20 @@ class CharList extends Component {
 			
 			return (
 				<li 
+					tabIndex={0}
 					className="char__item"
 					key={item.id}
-					onClick={() => this.props.onCharSelected(item.id)} >
+					onClick={() => { 
+						this.props.onCharSelected(item.id); 
+						this.focusCard(i);
+					}}
+					onKeyDown={(e) => {
+					    if (e.key === ' ' || e.key === "Enter") {
+							this.props.onCharSelected(item.id); 
+							this.focusCard(i);					    
+						}
+					}}
+					ref={this.setRefs}>
 						<img src={item.thumbnail} alt={item.name} style={imgStyle}/>
 						<div className="char__name">{item.name}</div>
 				</li>

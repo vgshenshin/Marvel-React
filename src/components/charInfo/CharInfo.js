@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import MarvelService from '../../services/MarvelService';
@@ -8,128 +8,108 @@ import Skeleton from '../skeleton/Skeleton';
 
 import './charInfo.scss';
 
-class CharInfo extends Component {
-    state = {
-        char: null,
-        loading: false,
-        error: false
-    }
+const CharInfo = (props) => {
 
-    marvelService = new MarvelService();
+	const [char, setChar] = useState(null);
+	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState(false);
 
-    componentDidMount() {
-        this.updateChar();
-    }
+	const marvelService = new MarvelService();
 
-    componentDidUpdate(prevProps) {
-        // обязательная проверка!! Иначе рендеринг зациклится и выполнит максимальное кол-во запросов на сервер
-        // проверяем текущий пропс с id персонажа такой же как был предыдущий?
-        if (this.props.charId !== prevProps.charId) {
-            this.updateChar();
-        }
-    }
+	useEffect(() => {
+		updateChar();
+	}, [props.charId])
 
-    onCharLoaded = (char) => {
-        this.setState({
-            char, 
-            loading: false
-        })
-    }
+	const onCharLoaded = (charSelected) => {
+		setChar(charSelected);
+		setLoading(false);
+	}
 
-    onCharLoading = () => {
-        this.setState({
-            loading: true
-        })
-    }
+	const onCharLoading = () => {
+		setLoading(true);
+	}
 
-    onError = () => {
-        this.setState({
-            loading: false,
-            error: true
-        })
-    }
+	const onError = () => {
+		setLoading(false);
+		setError(true);
+	}
 
-    updateChar = () => {
-        const {charId} = this.props;
-        if (!charId) {
-            return;
-        }
-        this.onCharLoading();
-        this.marvelService
-            .getCharacter(charId)
-            .then(this.onCharLoaded)
-            .catch(this.onError);
-    }
+	const updateChar = () => {
+		const {charId} = props;
+		if (!charId) {
+			return;
+		}
+		onCharLoading();
+		marvelService
+			.getCharacter(charId)
+			.then(onCharLoaded)
+			.catch(onError);
+	}
 
-    render() {
-        const {char, loading, error} = this.state;
+	const skeleton = error || loading || char ? null : <Skeleton/>;
+	const errorMessage = error ? <ErrorMessage/> : null;
+	const spinner = loading ? <Spinner/> : null;
+	const content = !(loading || error || !char) ? <View char={char}/> : null;
 
-        const skeleton = error || loading || char ? null : <Skeleton/>;
-        const errorMessage = error ? <ErrorMessage/> : null;
-        const spinner = loading ? <Spinner/> : null;
-        const content = !(loading || error || !char) ? <View char={char}/> : null;
-
-        return (
-            <div className="char__info">
-                {skeleton}
-                {errorMessage}
-                {spinner}
-                {content}
-            </div>
-        )
-    }
-    
+	return (
+		<div className="char__info">
+			{skeleton}
+			{errorMessage}
+			{spinner}
+			{content}
+		</div>
+	)  
 }
 
 
 const View = ({char}) => {
 
-    const {name, description, thumbnail, homepage, wiki, comics} = char;
-    let contain = {};
-    if (thumbnail.search(/not/)+1) {
-        contain = {objectFit: 'contain'};
-    }
-    let comicsRender = [];
-    if (comics.length) {
-        comicsRender = comics.map((elem, id) => {
-            return (
-                <li key={id}
-                    className="char__comics-item">
-                    {elem.name}
-                </li>
-            )
-        });
-    } else {
-        comicsRender = 'There is no comics with this character';
-    }
+	const {name, description, thumbnail, homepage, wiki, comics} = char;
+	let contain = {};
+	if (thumbnail.search(/not/)+1) {
+		contain = {objectFit: 'contain'};
+	}
+	let comicsRender = [];
+	if (comics.length) {
+		comicsRender = comics.map((elem, id) => {
+			return (
+				<li key={id}
+					className="char__comics-item">
+					{elem.name}
+				</li>
+			)
+		});
+	} else {
+		comicsRender = 'There is no comics with this character';
+	}
 
-    return (
-        <>
-            <div className="char__basics">
-                <img src={thumbnail} alt={name} style={contain} />
-                <div>
-                    <div className="char__info-name">{name}</div>
-                    <div className="char__btns">
-                        <a href={homepage} className="button button__main">
-                            <div className="inner">homepage</div>
-                        </a>
-                        <a href={wiki} className="button button__secondary">
-                            <div className="inner">Wiki</div>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <div className="char__descr">{description}</div>
-            <div className="char__comics">Comics:</div>
-            <ul className="char__comics-list">
-            { comicsRender }
-            </ul>
-        </>
-    )
+	return (
+		<>
+			<div className="char__basics">
+				<img src={thumbnail} alt={name} style={contain} />
+				<div>
+					<div className="char__info-name">{name}</div>
+					<div className="char__btns">
+						<a href={homepage} className="button button__main">
+							<div className="inner">homepage</div>
+						</a>
+						<a href={wiki} className="button button__secondary">
+							<div className="inner">Wiki</div>
+						</a>
+					</div>
+				</div>
+			</div>
+			<div className="char__descr">{description}</div>
+			<div className="char__comics">Comics:</div>
+			<ul className="char__comics-list">
+			{ comicsRender }
+			</ul>
+		</>
+	)
 }
 
 CharInfo.propTypes = {
-    charId: PropTypes.number
+	charId: PropTypes.number
 }
 
 export default CharInfo;

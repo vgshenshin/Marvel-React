@@ -26,8 +26,13 @@ const useMarvelService = () => {
 		return _transformCharacter(res.data.results[0]);
 	}
 
+	const getAllComics = async () => {
+		const res = await onRequest(`${_apiBase}comics?limit=8&${_apiKey}`);
+		return res.data.results.map(_transformComics);  //  в метод map будет приходить с сервера каждый объект с данными о персонаже и отсеиваться с помощью метода _transformCharacter в чистый объект
+	}
+
 	//  метод для отсеивания ненужных св-в в приходящем от сервера объекте c данными об одном персонаже
-	const _transformCharacter = (char) =>{
+	const _transformCharacter = (char) => {
 		return {
 			id: char.id,
 			name: char.name,
@@ -39,7 +44,16 @@ const useMarvelService = () => {
 		}
 	}
 
-	return { loading, error, clearError, getAllCharacters, getCharacter }
+	const _transformComics = (comics) => {
+		return {
+			id: comics.id,
+			title: comics.title,
+			price: comics.prices[0].price ? `${comics.prices[0].price}$` : "not available",
+			thumbnail: comics.thumbnail.path + '.' + comics.thumbnail.extension,
+		}
+	}
+
+	return { loading, error, clearError, getAllCharacters, getCharacter, getAllComics }
 }
 
 export default useMarvelService;

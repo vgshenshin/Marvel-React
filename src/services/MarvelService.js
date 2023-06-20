@@ -9,7 +9,7 @@ const useMarvelService = () => {
 
 	const _apiBase = 'https://gateway.marvel.com:443/v1/public/';
 	const _apiKey = 'apikey=fe9d1cb89c0c944017049cc745da12ef';
-	const _apiOffset = 210;
+	const _apiOffset = 65;
 
 	// метод для получения массива с объектами содерж. инф-ю о персонажах
 	const getAllCharacters = async (offset = _apiOffset) => {
@@ -26,8 +26,8 @@ const useMarvelService = () => {
 		return _transformCharacter(res.data.results[0]);
 	}
 
-	const getAllComics = async () => {
-		const res = await onRequest(`${_apiBase}comics?limit=8&${_apiKey}`);
+	const getAllComics = async (offset = _apiOffset) => {
+		const res = await onRequest(`${_apiBase}comics?limit=8&offset=${offset}&${_apiKey}`);
 		return res.data.results.map(_transformComics);  //  в метод map будет приходить с сервера каждый объект с данными о персонаже и отсеиваться с помощью метода _transformCharacter в чистый объект
 	}
 

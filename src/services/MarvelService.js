@@ -26,6 +26,11 @@ const useMarvelService = () => {
 		return _transformCharacter(res.data.results[0]);
 	}
 
+	const getCharByName = async (name) => {
+		const res = await onRequest(`${_apiBase}characters?name=${name}&${_apiKey}`);
+		return res.data.results.map(_transformCharacter);
+	}
+
 	const getAllComics = async (offset = _apiOffset) => {
 		const res = await onRequest(`${_apiBase}comics?limit=8&offset=${offset}&${_apiKey}`);
 		return res.data.results.map(_transformComics);  //  в метод map будет приходить с сервера каждый объект с данными о персонаже и отсеиваться с помощью метода _transformCharacter в чистый объект
@@ -61,7 +66,7 @@ const useMarvelService = () => {
 		}
 	}
 
-	return { loading, error, clearError, getAllCharacters, getCharacter, getAllComics, getComic }
+	return { loading, error, clearError, getAllCharacters, getCharacter, getCharByName, getAllComics, getComic }
 }
 
 export default useMarvelService;
